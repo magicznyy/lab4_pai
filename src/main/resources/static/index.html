@@ -3,8 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+
 </head>
 <body>
 
+<button id="1"> Show all students</button>
+
+<script>
+     const showAllButton = document.getElementById("1");
+     showAllButton.addEventListener("click", myFunction);
+
+function myFunction() {
+
+fetch("http://localhost:8080/students").then(
+  res => {
+    res.json().then(
+      data => {
+        console.log(data);
+        if (data.length > 0) {
+
+          var temp = "";
+          data.forEach((itemData) => {
+            temp += "<tr>";
+            temp += "<td>" + itemData.id + "</td>";
+            temp += "<td>" + itemData.name + "</td>";
+            temp += "<td>" + itemData.surname + "</td>";
+            temp += "<td>" + itemData.average + "</td>";
+             temp += "<td> <button id='editButton" + itemData.id + "' > Edytuj </button> </td>"
+             temp += "<td> <button id='deleteButton"  + itemData.id + "' onclick = 'deleteStudent(" + itemData.id + ")' > Usun </button> </td></tr>";
+          });
+          document.getElementById('studentsTable').innerHTML = temp;
+
+        }
+      }
+    )
+  }
+)
+
+}
+
+function deleteStudent(id){
+
+         fetch("http://localhost:8080/delete/"+id ,{method: 'DELETE'});
+
+        }
+
+
+function editStudent(id,name,surname,average){
+
+ fetch("http://localhost:8080/delete/"+id ,{method: 'PUT'});
+
+        }
+
+}
+
+
+
+</script>
+
+<br><br>
+
+<form id="addStudentForm">
+    <label for="name">First name:</label><br>
+    <input type="text" id="name" name="name"><br>
+    <label for="surname">Last name:</label><br>
+    <input type="text" id="surname" name="surname"><br>
+    <label for="average">Average:</label><br>
+    <input type="number" id="average" name="average"><br><br>
+    <button type="submit">Add a student</button>
+</form>
+
+<script>
+
+ const form  = document.getElementById("addStudentForm");
+
+ form.addEventListener('submit', function(e){
+       e.preventDefault();
+
+const formData = new FormData(form);
+
+console.log(JSON.stringify(formData));
+     fetch('http://localhost:8080/add',{
+        method: 'post',
+        headers: {
+               "Content-Type": "application/json",
+           },
+        body:        JSON.stringify({
+        name : document.getElementById("name").value,
+        surname : document.getElementById("surname").value,
+        average : document.getElementById("average").value
+        })
+     }).then(function(response){
+     return response.text();
+     }).then(function(text){
+     console.log(text);
+     })
+
+ });
+
+
+    </script>
+
+
+
+
+<table id="studentsTable">
+    <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Surname</th>
+        <th>Average</th>
+    </tr>
+    <tr>
+        <td>Alfreds Futterkiste</td>
+        <td>Maria Anders</td>
+        <td>Germany</td>
+    </tr>
+</table>
 </body>
 </html>
